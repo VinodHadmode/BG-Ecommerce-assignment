@@ -9,12 +9,14 @@ import Cart from "./pages/Cart"
 import MyAccount from "./pages/MyAccount"
 import MyOrders from "./pages/MyOrders"
 import PageNotFound from "./pages/PageNotFound"
+import Navbar from "./components/Navbar"
 
 function App() {
 
   return (
     <>
     <div>
+      <Navbar/>
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/clothes" element={<Clothes/>}/>
