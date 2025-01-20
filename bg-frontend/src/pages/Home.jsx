@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CiCirclePlus } from "react-icons/ci";
+import ProductModal from "../components/ProductModal";
 
 const base_url = "https://api.escuelajs.co/api/v1/products";
 
@@ -8,6 +9,8 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -27,6 +30,16 @@ const Home = () => {
   }, []);
 
   console.log("products", products);
+
+  const handleShowModal = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedProduct(null);
+  };
 
   if (loading) {
     return (
@@ -49,7 +62,12 @@ const Home = () => {
           {products &&
             products.map((product) => {
               return (
-                <div className="col-md-4 mb-4" key={product.id}>
+                <div 
+                className="col-md-4 mb-4" 
+                key={product.id}
+                style={{cursor:"pointer"}}
+                onClick={()=>handleShowModal(product)}
+                >
                   <div className="card h-100">
                     <img
                       src={product.images[0]}
@@ -89,6 +107,7 @@ const Home = () => {
                         <p className="card-text fw-bold m-0">
                           ${product.price}
                         </p>
+
                       </div>
                     </div>
                   </div>
@@ -96,6 +115,13 @@ const Home = () => {
               );
             })}
         </div>
+
+        {/* ProductModal component */}
+        <ProductModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          product={selectedProduct}
+        />
       </div>
     </div>
   );
