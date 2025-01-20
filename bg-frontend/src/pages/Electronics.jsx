@@ -1,6 +1,7 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CiCirclePlus } from "react-icons/ci";
+import ProductModal from "../components/ProductModal";
 
 const base_url = "https://api.escuelajs.co/api/v1/products";
 
@@ -8,6 +9,8 @@ const Electronics = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -24,6 +27,16 @@ const Electronics = () => {
       setError("Failed to fetch products. Please try again.");
       setLoading(false);
     }
+  };
+
+  const handleShowModal = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedProduct(null);
   };
 
   useEffect(() => {
@@ -45,13 +58,22 @@ const Electronics = () => {
   }
   return (
     <div>
-      <div>
-        <div className="container my-5">
+      <div className="container my-5">
+        {products.length === 0 ? (
+          <div className="text-center my-5">
+            <h4>No products found !!</h4>
+          </div>
+        ) : (
           <div className="row">
             {products &&
               products.map((product) => {
                 return (
-                  <div className="col-md-4 mb-4" key={product.id}>
+                  <div
+                    className="col-md-4 mb-4"
+                    key={product.id}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleShowModal(product)}
+                  >
                     <div className="card h-100">
                       <img
                         src={product.images[0]}
@@ -98,7 +120,14 @@ const Electronics = () => {
                 );
               })}
           </div>
-        </div>
+        )}
+
+        {/* ProductModal component */}
+        <ProductModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          product={selectedProduct}
+        />
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ const Toys = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -24,6 +26,16 @@ const Toys = () => {
       setError("Failed to fetch products. Please try again.");
       setLoading(false);
     }
+  };
+
+  const handleShowModal = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedProduct(null);
   };
 
   useEffect(() => {
@@ -56,7 +68,12 @@ const Toys = () => {
               {products &&
                 products.map((product) => {
                   return (
-                    <div className="col-md-4 mb-4" key={product.id}>
+                    <div
+                      className="col-md-4 mb-4"
+                      key={product.id}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleShowModal(product)}
+                    >
                       <div className="card h-100">
                         <img
                           src={product.images[0]}
