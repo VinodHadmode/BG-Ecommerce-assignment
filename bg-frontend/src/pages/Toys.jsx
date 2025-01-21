@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { CiCirclePlus } from "react-icons/ci";
+import ProductModal from "../components/ProductModal";
+import AddProductModal from "../components/AddProductModal";
+import { CartContext } from "../context/CartContextProvider";
 
 const base_url = "https://api.escuelajs.co/api/v1/products";
 
@@ -9,44 +12,57 @@ const Toys = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [addProductModal, setAddProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const { addToCart } = useContext(CartContext);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${base_url}`);
       //filtering based on clothes category
-      const electronicsProducts = res.data.filter(
-        (product) => product.category.name === "Toys"
+      const toysProducts = res.data.filter(
+        (product) => product.category.name === "Furniture"
       );
-      setProducts(electronicsProducts);
+      setProducts(toysProducts);
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setError("Failed to fetch products. Please try again.");
       setLoading(false);
     }
-  };
-
-  const handleShowModal = (product) => {
-    setSelectedProduct(product);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedProduct(null);
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const handleShowProductModal = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
+  const handleCloseProductModal = () => {
+    setShowModal(false);
+    setSelectedProduct(null);
+  };
+
+  const handleShowAddProductModal = (product, event) => {
+    event.stopPropagation(); // Prevent triggering the product detail modal
+    addToCart(product); // Add product to the cart
+    setAddProductModal(true); // Open the cart modal
+  };
+
+  const handleCloseAddProductModal = () => {
+    setAddProductModal(false);
+  };
+
   if (loading) {
     return (
-      <div class="d-flex justify-content-center m-5">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
+      <div className="d-flex justify-content-center m-5">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
         </div>
       </div>
     );
@@ -55,73 +71,66 @@ const Toys = () => {
   if (error) {
     return <div className="alert alert-danger text-center my-5">{error}</div>;
   }
+
   return (
     <div>
-      <div>
-        <div className="container my-5">
-          {products.length === 0 ? (
-            <div className="text-center my-5">
-              <h4>No products found !!</h4>
-            </div>
-          ) : (
-            <div className="row">
-              {products &&
-                products.map((product) => {
-                  return (
-                    <div
-                      className="col-md-4 mb-4"
-                      key={product.id}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleShowModal(product)}
-                    >
-                      <div className="card h-100">
-                        <img
-                          src={product.images[0]}
-                          className="card-img-top"
-                          style={{ height: "200px", objectFit: "cover" }}
-                          alt={product.title}
-                        />
-                        <span
-                          className="badge bg-secondary text-light position-absolute bottom-2 start-0 m-2"
-                          style={{
-                            backgroundColor: "rgba(0, 0, 0, 0.6)",
-                            fontSize: "0.7rem",
-                          }}
-                        >
-                          {product.category.name}
-                        </span>
+      <div className="container my-5">
+        {products.length === 0 ? (
+          <div className="text-center my-5">
+            <h4>No products found !!</h4>
+          </div>
+        ) : (
+          <div className="row">
+            {products.map((product) => (
+              <div
+                className="col-md-4 mb-4"
+                key={product.id}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleShowProductModal(product)}
+              >
+                <div className="card h-100">
+                  <img
+                    src={product.images[0]}
+                    className="card-img-top"
+                    style={{ height: "200px", objectFit: "cover" }}
+                    alt={product.title}
+                  />
+                  <button
+                    className="position-absolute"
+                    style={{
+                      top: "10px",
+                      right: "10px",
+                      background: "none",
+                      border: "none",
+                      padding: "0",
+                      cursor: "pointer",
+                    }}
+                    onClick={(event) => handleShowAddProductModal(product, event)}
+                  >
+                    <CiCirclePlus size={30} />
+                  </button>
+                  <div className="card-body">
+                    <p className="card-title">{product.title}</p>
+                    <p className="card-text">${product.price}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-                        {/* Add to Cart Button */}
-                        <button
-                          className="position-absolute"
-                          style={{
-                            top: "10px",
-                            right: "10px",
-                            background: "none",
-                            border: "none",
-                            padding: "0",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <CiCirclePlus size={30} />
-                        </button>
+        {/* Product Detail Modal */}
+        <ProductModal
+          show={showModal}
+          handleClose={handleCloseProductModal}
+          product={selectedProduct}
+        />
 
-                        {/* Card Body */}
-                        <div className="card-body d-flex flex-column justify-content-between">
-                          <div className="d-flex justify-content-between align-items-center mb-3">
-                            <p className="card-title m-0">{product.title}</p>
-                            <p className="card-text fw-bold m-0">
-                              ${product.price}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
-        </div>
+        {/* Add Product Modal */}
+        <AddProductModal
+          show={addProductModal}
+          handleClose={handleCloseAddProductModal}
+        />
       </div>
     </div>
   );

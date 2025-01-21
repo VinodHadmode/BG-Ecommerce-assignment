@@ -3,12 +3,21 @@ import { Modal, Button } from "react-bootstrap";
 import { CartContext } from "../context/CartContextProvider";
 
 const AddProductModal = ({ show, handleClose }) => {
-  const { cart, addToCart, removeCartItem } = useContext(CartContext);
+  const { cart, addToCart, decreaseQuantity, placeOrder } = useContext(CartContext);
+
+  if (!placeOrder) {
+    return <div>Error: Order is not available!</div>;
+  }
+
+  const totalPrice = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Your Cart</Modal.Title>
+        <Modal.Title>My Orders</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -45,11 +54,7 @@ const AddProductModal = ({ show, handleClose }) => {
                   <span className="mx-2">{item.quantity}</span>
                   <button
                     className="btn btn-sm btn-outline-secondary"
-                    onClick={() =>
-                      item.quantity > 1
-                        ? addToCart({ ...item, quantity: -1 })
-                        : removeCartItem(item.id)
-                    }
+                    onClick={() => decreaseQuantity(item.id)} // Updated here
                   >
                     -
                   </button>
@@ -69,12 +74,14 @@ const AddProductModal = ({ show, handleClose }) => {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Close
+        <Button variant="outline-secondary" disabled>
+          Total: ${totalPrice.toFixed(2)}
         </Button>
+
         <Button
-          variant="primary"
+          variant="dark"
           onClick={() => {
+            placeOrder(); // Place the order
             alert("Proceeding to checkout...");
             handleClose();
           }}

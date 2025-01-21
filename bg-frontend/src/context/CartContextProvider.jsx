@@ -1,36 +1,64 @@
 import React, { createContext, useState } from "react";
 
+// Create a context for cart
 export const CartContext = createContext();
 
 const CartContextProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
 
-  const addToCart = (product) => {
+  // Function to add item to the cart
+  const addToCart = (item) => {
     setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.id === product.id);
-      if (existingProduct) {
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+      const existingItem = prevCart.find((i) => i.id === item.id);
+      if (existingItem) {
+        return prevCart.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
-      } else {
-        return [...prevCart, { ...product, quantity: 1 }];
       }
+      return [...prevCart, { ...item, quantity: 1 }];
     });
   };
 
-  const removeCartItem = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  // Function to remove item from the cart
+  const removeCartItem = (itemId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
   };
 
-  const clearCart = () => {
+  // Function to decrease the quantity of an item
+  const decreaseQuantity = (itemId) => {
+    setCart((prevCart) => {
+      return prevCart
+        .map((item) =>
+          item.id === itemId
+            ? {
+                ...item,
+                quantity: item.quantity > 1 ? item.quantity - 1 : item.quantity,
+              }
+            : item
+        )
+        .filter((item) => item.quantity > 0); // Removes item if quantity becomes 0
+    });
+  };
+
+  // Function to place an order
+  const placeOrder = () => {
+    const newOrder = {
+      id: new Date().getTime(),
+      items: cart,
+      totalPrice: cart.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      ),
+      date: new Date().toLocaleDateString(),
+    };
+    setOrders((prevOrders) => [...prevOrders, newOrder]);
     setCart([]);
   };
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeCartItem, clearCart }}
+      value={{ cart, addToCart,decreaseQuantity, removeCartItem, placeOrder, orders }}
     >
       {children}
     </CartContext.Provider>
