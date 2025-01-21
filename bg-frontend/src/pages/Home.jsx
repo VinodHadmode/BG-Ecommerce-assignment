@@ -9,19 +9,19 @@ const base_url = "https://api.escuelajs.co/api/v1/products";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [addProductModal, setAddProductModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const { addToCart } = useContext(CartContext);
+  const { addToCart, addProductModal, setAddProductModal } = useContext(CartContext); // Use context here
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${base_url}`);
       setProducts(res.data);
+      setFilteredProducts(res.data);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -34,24 +34,32 @@ const Home = () => {
     fetchProducts();
   }, []);
 
+  // Handle search input change
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filtered = products.filter((product) =>
+      product.title.toLowerCase().includes(query)
+    );
+    setFilteredProducts(filtered);
+  };
+
   const handleShowProductModal = (product) => {
-    setSelectedProduct(product);
     setShowModal(true);
   };
 
   const handleCloseProductModal = () => {
     setShowModal(false);
-    setSelectedProduct(null);
   };
 
   const handleShowAddProductModal = (product, event) => {
-    event.stopPropagation(); // Prevent triggering the product detail modal
-    addToCart(product); // Add product to the cart
-    setAddProductModal(true); // Open the cart modal
+    event.stopPropagation();
+    addToCart(product);
+    setAddProductModal(true); 
   };
 
   const handleCloseAddProductModal = () => {
-    setAddProductModal(false);
+    setAddProductModal(false); 
   };
 
   if (loading) {
@@ -71,13 +79,25 @@ const Home = () => {
   return (
     <div>
       <div className="container my-5">
-        {products.length === 0 ? (
+        {/* Search Input */}
+        <div className="mb-5 d-flex justify-content-center">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search a products"
+            value={searchQuery}
+            onChange={handleSearch}
+            style={{ width: "40%", padding: "10px" }}
+          />
+        </div>
+
+        {filteredProducts.length === 0 ? (
           <div className="text-center my-5">
-            <h4>No products found !!</h4>
+            <h4>No products found!</h4>
           </div>
         ) : (
           <div className="row">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 className="col-md-4 mb-4"
                 key={product.id}
@@ -88,8 +108,8 @@ const Home = () => {
                   <img
                     src={product.images[0]}
                     className="card-img-top"
-                    style={{ height: "200px", objectFit: "cover" }}
                     alt={product.title}
+                    style={{ height: "200px", objectFit: "cover" }}
                   />
                   <button
                     className="position-absolute"
@@ -119,7 +139,6 @@ const Home = () => {
         <ProductModal
           show={showModal}
           handleClose={handleCloseProductModal}
-          product={selectedProduct}
         />
 
         {/* Add Product Modal */}

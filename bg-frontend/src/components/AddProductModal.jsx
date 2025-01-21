@@ -5,8 +5,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const AddProductModal = ({ show, handleClose }) => {
-  const { cart, addToCart, decreaseQuantity, placeOrder } =
-    useContext(CartContext);
+  const { cart, addToCart, decreaseQuantity, placeOrder } =useContext(CartContext);
   const navigate = useNavigate();
 
   if (!placeOrder) {

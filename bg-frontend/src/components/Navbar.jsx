@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FaShoppingCart } from "react-icons/fa";
+import { CartContext } from '../context/CartContextProvider';
 
 const Navbar = () => {
+  const { cart, setAddProductModal } = useContext(CartContext);
+
+  const handleCartClick = () => {
+    setAddProductModal(true);
+  };
+
   return (
     <nav className='navbar navbar-expand-lg navbar-light bg-light shadow-sm'>
       <div className="container-fluid">
 
-        {/* Logo */}
         <Link to={"/"} className='navbar-brand'>
           SHOPI
         </Link>
 
-        {/* Pages on the left side */}
         <div className='navbar-nav mr-auto'>
           <Link to={"/"} className='nav-link'>All</Link>
           <Link to={"/clothes"} className='nav-link'>Clothes</Link>
@@ -21,16 +26,19 @@ const Navbar = () => {
           <Link to={"/toys"} className='nav-link'>Toys</Link>
         </div>
 
-        {/* Right side items (Reversed order) */}
         <div className='navbar-nav ml-auto'>
-          <span className='nav-link'>Username</span> {/* Display username */}
+          <span className='nav-link'>Username</span> 
           <Link to={"/my-orders"} className='nav-link'>My Orders</Link>
           <Link to={"/my-account"} className='nav-link'>My Account</Link>
 
-          {/* Cart Icon */}
-          <Link to={"/cart"} className='nav-link cart-icon'>
-            <FaShoppingCart style={{ fontSize: "1.5rem", color: "#333" }} />
-          </Link>
+          <span
+            className="nav-link cart-icon"
+            onClick={handleCartClick} // Trigger modal on click
+          >
+            <FaShoppingCart size={24} style={{cursor:"pointer"}}/>
+          </span>
+          <h6>{cart.length}</h6>
+
         </div>
 
       </div>

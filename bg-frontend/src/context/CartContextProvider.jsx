@@ -6,7 +6,7 @@ export const CartContext = createContext();
 const CartContextProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
-  
+  const [addProductModal, setAddProductModal] = useState(false); // Modal state
 
   // Function to add item to the cart
   const addToCart = (item) => {
@@ -54,12 +54,21 @@ const CartContextProvider = ({ children }) => {
       date: new Date().toLocaleDateString(),
     };
     setOrders((prevOrders) => [...prevOrders, newOrder]);
-    setCart([]);
+    setCart([]); // Clear cart after placing the order
   };
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart,decreaseQuantity, removeCartItem, placeOrder, orders }}
+      value={{
+        cart,
+        addToCart,
+        decreaseQuantity,
+        removeCartItem,
+        placeOrder,
+        orders,
+        addProductModal, // Provide modal state
+        setAddProductModal, // Provide modal state setter
+      }}
     >
       {children}
     </CartContext.Provider>
