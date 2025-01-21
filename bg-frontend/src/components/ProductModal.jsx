@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
+
 const ProductModal = ({ show, handleClose, product }) => {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
@@ -12,7 +13,7 @@ const ProductModal = ({ show, handleClose, product }) => {
         <div className="row">
           <div className="col-md-6">
             <img
-              src={product?.images[0]}
+              src={product?.images[0]}  // Ensure it accesses the correct product
               alt={product?.title}
               className="img-fluid"
               style={{ maxHeight: "300px", objectFit: "contain" }}
@@ -24,7 +25,7 @@ const ProductModal = ({ show, handleClose, product }) => {
               ${product?.price}
             </h3>
             <h4 className="font-weight-bold">{product?.title}</h4>
-            <p className="mt-3">{product?.description}</p>{" "}
+            <p className="mt-3">{product?.description}</p>
           </div>
         </div>
       </Modal.Body>
@@ -37,4 +38,4 @@ const ProductModal = ({ show, handleClose, product }) => {
   );
 };
 
-export default ProductModal;
+export default ProductModal;  

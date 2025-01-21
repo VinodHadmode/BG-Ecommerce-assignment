@@ -14,7 +14,10 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const { addToCart, addProductModal, setAddProductModal } = useContext(CartContext); // Use context here
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const { addToCart, addProductModal, setAddProductModal } =
+    useContext(CartContext); // Use context here
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -45,7 +48,8 @@ const Home = () => {
   };
 
   const handleShowProductModal = (product) => {
-    setShowModal(true);
+    setSelectedProduct(product); // Set the selected product
+    setShowModal(true); // Show the modal
   };
 
   const handleCloseProductModal = () => {
@@ -55,11 +59,11 @@ const Home = () => {
   const handleShowAddProductModal = (product, event) => {
     event.stopPropagation();
     addToCart(product);
-    setAddProductModal(true); 
+    setAddProductModal(true);
   };
 
   const handleCloseAddProductModal = () => {
-    setAddProductModal(false); 
+    setAddProductModal(false);
   };
 
   if (loading) {
@@ -99,7 +103,7 @@ const Home = () => {
           <div className="row">
             {filteredProducts.map((product) => (
               <div
-                className="col-md-4 mb-4"
+                className="col-6 col-sm-4 col-lg-3 mb-4" // Adjusted for 4 cards on large screens
                 key={product.id}
                 style={{ cursor: "pointer" }}
                 onClick={() => handleShowProductModal(product)}
@@ -121,7 +125,9 @@ const Home = () => {
                       padding: "0",
                       cursor: "pointer",
                     }}
-                    onClick={(event) => handleShowAddProductModal(product, event)}
+                    onClick={(event) =>
+                      handleShowAddProductModal(product, event)
+                    }
                   >
                     <CiCirclePlus size={30} />
                   </button>
@@ -135,10 +141,10 @@ const Home = () => {
           </div>
         )}
 
-        {/* Product Detail Modal */}
         <ProductModal
           show={showModal}
           handleClose={handleCloseProductModal}
+          product={selectedProduct} // Pass the selected product here
         />
 
         {/* Add Product Modal */}
