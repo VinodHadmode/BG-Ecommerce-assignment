@@ -1,9 +1,13 @@
 import React, { useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { CartContext } from "../context/CartContextProvider";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AddProductModal = ({ show, handleClose }) => {
-  const { cart, addToCart, decreaseQuantity, placeOrder } = useContext(CartContext);
+  const { cart, addToCart, decreaseQuantity, placeOrder } =
+    useContext(CartContext);
+  const navigate = useNavigate();
 
   if (!placeOrder) {
     return <div>Error: Order is not available!</div>;
@@ -13,6 +17,11 @@ const AddProductModal = ({ show, handleClose }) => {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  const handleToast = () => {
+    toast.success("Order successfull!!");
+    navigate("/my-orders");
+  };
 
   return (
     <Modal show={show} onHide={handleClose} size="lg">
@@ -82,8 +91,8 @@ const AddProductModal = ({ show, handleClose }) => {
           variant="dark"
           onClick={() => {
             placeOrder(); // Place the order
-            alert("Proceeding to checkout...");
             handleClose();
+            handleToast();
           }}
         >
           Checkout

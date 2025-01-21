@@ -10,6 +10,10 @@ import MyAccount from "./pages/MyAccount"
 import MyOrders from "./pages/MyOrders"
 import PageNotFound from "./pages/PageNotFound"
 import Navbar from "./components/Navbar"
+import OrderDetail from "./pages/OrderDetail"
+
+import { ToastContainer, toast } from 'react-toastify';
+
 
 function App() {
 
@@ -17,6 +21,7 @@ function App() {
     <>
     <div>
       <Navbar/>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/clothes" element={<Clothes/>}/>
@@ -26,6 +31,7 @@ function App() {
         <Route path="/cart" element={<Cart/>}/>
         <Route path="/my-account" element={<MyAccount/>}/>
         <Route path="/my-orders" element={<MyOrders/>}/>
+        <Route path="/my-orders/:orderId" element={<OrderDetail />} />
 
         <Route path="*" element={<PageNotFound/>}/>
 
